@@ -38,37 +38,6 @@ func (e *ShoppingCartEvent) UnmarshalJSON(data []byte) error {
 }
 
 func Example_shoppingCartEvent() {
-	/*
-	   type ItemAdded struct {
-	   	ItemID   string `json:"item_id"`
-	   	Quantity int    `json:"quantity"`
-	   }
-
-	   type ItemRemoved struct {
-	   	ItemID   string `json:"item_id"`
-	   	Quantity int    `json:"quantity"`
-	   }
-
-	   type Checkout struct{}
-
-	   type ShoppingCartEvent struct {
-	   	Value    interface{} `enumvaluefield:"value"`
-	   	Variants [0]*struct {
-	   		ItemAdded   `enumtag:"item_added"`
-	   		ItemRemoved `enumtag:"item_removed"`
-	   		Checkout    `enumtag:"checkout"`
-	   	} `enumtagfield:"type"`
-	   }
-
-	   func (e ShoppingCartEvent) MarshalJSON() ([]byte, error) {
-	   	return enumtag.MarshalJSON(e)
-	   }
-
-	   func (e *ShoppingCartEvent) UnmarshalJSON(data []byte) error {
-	   	return enumtag.UnmarshalJSON(data, e)
-	   }
-	*/
-
 	for _, jsonEvent := range []string{
 		`{"type": "item_removed", "value": {"item_id": "foo", "quantity": 2}}`,
 		`{"type": "checkout"}`,
@@ -143,47 +112,6 @@ func (e *Expr) UnmarshalJSON(b []byte) error {
 // In Go, we have Number, Add, and Sub types to represent each case, and a
 // Expr enum type that can be any of those.
 func Example_expr() {
-	/*
-		type Number struct {
-			Value int `json:"value"`
-		}
-
-		func (e Number) String() string { return strconv.Itoa(e.Value) }
-
-		type Add struct {
-			Left  Expr `json:"left"`
-			Right Expr `json:"right"`
-		}
-
-		func (e Add) String() string { return fmt.Sprintf("(%v + %v)", e.Left, e.Right) }
-
-		type Sub struct {
-			Left  Expr `json:"left"`
-			Right Expr `json:"right"`
-		}
-
-		func (e Sub) String() string { return fmt.Sprintf("(%v - %v)", e.Left, e.Right) }
-
-		type Expr struct {
-			Value    interface{ String() string }
-			Variants [0]*struct {
-				Number `enumtag:"number"`
-				Add    `enumtag:"add"`
-				Sub    `enumtag:"sub"`
-			} `enumtagfield:"type"`
-		}
-
-		func (e Expr) String() string { return e.Value.String() }
-
-		func (e Expr) MarshalJSON() ([]byte, error) {
-			return enumtag.MarshalJSON(e)
-		}
-
-		func (e *Expr) UnmarshalJSON(b []byte) error {
-			return enumtag.UnmarshalJSON(b, e)
-		}
-	*/
-
 	var expr Expr
 	json.Unmarshal([]byte(`
 		{
