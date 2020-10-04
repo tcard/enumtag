@@ -63,6 +63,7 @@ func TestUnmarshalMarshal(t *testing.T) {
 		expectedError: `unknown tag "unknown"`,
 	}, {
 		name:          "bad value",
+		enum:          enumType{},
 		json:          `{"type": "qux", "value": "not a slice"}`,
 		expectedError: `unmarshaling enum value into type []string`,
 	}, {
@@ -76,6 +77,7 @@ func TestUnmarshalMarshal(t *testing.T) {
 		json:     `{"type": "def", "D": 1, "E": 2, "F": 3}`,
 		expected: DEF{1, 2, 3},
 	}} {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -90,6 +92,9 @@ func TestUnmarshalMarshal(t *testing.T) {
 			}
 			if expected, got := tc.expected, enum.FieldByName("Value").Interface(); !reflect.DeepEqual(expected, got) {
 				t.Fatalf("expected %+v; got %+v", expected, got)
+			}
+			if err != nil {
+				return
 			}
 
 			reversed, err := enumtag.MarshalJSON(enum.Interface())

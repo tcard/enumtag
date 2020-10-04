@@ -109,7 +109,7 @@ func MarshalJSON(v interface{}) ([]byte, error) {
 		return nil, fmt.Errorf("value type %v doesn't have an associated tag", enum.v.Type())
 	}
 
-	rawFields := enum.rawFields()
+	rawFields := enum.rawFieldsForMarshal()
 	variant := enum.v.Elem()
 	if enum.valueIsEmbedded() {
 		for i := 0; i < variant.NumField(); i++ {
@@ -142,7 +142,7 @@ func UnmarshalJSON(data []byte, dst interface{}) error {
 		return errMalformedType(dst, fmt.Errorf("pointee type: %w", err))
 	}
 
-	raw := reflect.New(reflect.StructOf(enum.rawFields()))
+	raw := reflect.New(reflect.StructOf(enum.rawFieldsForUnmarshal()))
 	err = json.Unmarshal(data, raw.Interface())
 	if err != nil {
 		return fmt.Errorf("tagenum: unmarshaling enum tag from field %q: %w", enum.tagField, err)
@@ -177,16 +177,30 @@ type enumValue struct {
 	valueField string
 }
 
-func (ev enumValue) rawFields() []reflect.StructField {
+func (ev enumValue) rawFieldsForMarshal() []reflect.StructField {
+	return ev.rawFields(true)
+}
+
+func (ev enumValue) rawFieldsForUnmarshal() []reflect.StructField {
+	return ev.rawFields(false)
+}
+
+func (ev enumValue) rawFields(marshal bool) []reflect.StructField {
 	fs := []reflect.StructField{{
 		Name: "Tag",
-		Type: reflect.TypeOf(""),
+		Type: stringReflectType,
 		Tag:  reflect.StructTag(fmt.Sprintf(`json:"%s"`, ev.tagField)),
 	}}
 	if !ev.valueIsEmbedded() {
+		var typ reflect.Type
+		if marshal {
+			typ = emptyInterfaceReflectType
+		} else {
+			typ = jsonRawMessageReflectType
+		}
 		fs = append(fs, reflect.StructField{
 			Name: "Value",
-			Type: reflect.TypeOf(json.RawMessage(nil)),
+			Type: typ,
 			Tag:  reflect.StructTag(fmt.Sprintf(`json:"%s"`, ev.valueField)),
 		})
 	}
@@ -274,3 +288,9 @@ func reflectEnum(v reflect.Value) (enum enumValue, err error) {
 func errMalformedType(v interface{}, err error) error {
 	return fmt.Errorf("enumtag: malformed enum type %T: %w", v, err)
 }
+
+var (
+	stringReflectType         = reflect.TypeOf("")
+	jsonRawMessageReflectType = reflect.TypeOf(json.RawMessage(nil))
+	emptyInterfaceReflectType = reflect.TypeOf([0]interface{}{}).Elem()
+)
