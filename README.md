@@ -1,4 +1,4 @@
-# enumtag [![Build Status](https://secure.travis-ci.org/tcard/enumtag.svg?branch=master)](http://travis-ci.org/tcard/enumtag) [![GoDoc](https://godoc.org/github.com/tcard/enumtag?status.svg)](https://godoc.org/github.com/tcard/enumtag)
+# enumtag [![Build Status](https://secure.travis-ci.org/tcard/enumtag.svg?branch=main)](http://travis-ci.org/tcard/enumtag) [![GoDoc](https://godoc.org/github.com/tcard/enumtag?status.svg)](https://godoc.org/github.com/tcard/enumtag)
 
 Package enumtag provides a type-directed mechanism to encode arbitrary tagged enums as JSON.
 
